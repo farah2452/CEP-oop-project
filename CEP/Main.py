@@ -34,8 +34,8 @@ class Main(Tk):
         self.titlelab = Label(self, text="Welcome To\nVirtual shoping Cart",
                        font=("Times", "30", "italic"), bg=windowbg).pack(pady=10)
         
-        
-        self.options = ("Customer","Seller")
+
+        self.options = ("Customer", "Seller")
         self.option = StringVar()
         self.frame_option = ttk.Combobox(self, textvar=self.option, values=self.options, font=("goudy old style",13),justify=CENTER,state="readonly")
         self.frame_option.current(0)

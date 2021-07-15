@@ -28,13 +28,26 @@ class SellerGui(Tk):
         self.button_frame = Frame(self, height=150, pady=60, bd=5, bg="#BBDEFB")
         self.button_frame.pack(fill=X)
 
-        self.buttons_tup = ("Add product", "b2", "b3")
-        for button in range(len(self.buttons_tup)):
+        # add product image on the button
+        self.add_icon_pic = Image.open("add_icon.png")
+        self.add_icon_pic = self.add_icon_pic.resize((20, 20), Image.ANTIALIAS)
+        self.add_icon_pic = ImageTk.PhotoImage(self.add_icon_pic)
 
-            self.b = Button(self.button_frame, text=self.buttons_tup[button],
-                            width=23, font=("Times", "18", "bold italic"),
-                            relief=GROOVE, bg="#03A9F4", fg="white")
-            self.b.grid(row=0, column=button, padx=50)
+        self.add_product_button = Button(self.button_frame, text="Add product",
+                                         padx=13, font=("Times", "18", "bold italic"),
+                                         relief=GROOVE, bg="#03A9F4",
+                                         fg="white", image=self.add_icon_pic, compound=LEFT)
+        self.add_product_button.grid(row=0, column=0, padx=50)
+
+        self.b2 = Button(self.button_frame, text="some button 2",
+                         font=("Times", "18", "bold italic"),
+                         relief=GROOVE, bg="#03A9F4", fg="white")
+        self.b2.grid(row=0, column=1, padx=50)
+
+        self.b3 = Button(self.button_frame, text="some button 3",
+                         font=("Times", "18", "bold italic"),
+                         relief=GROOVE, bg="#03A9F4", fg="white")
+        self.b3.grid(row=0, column=2, padx=50)
 
 
 

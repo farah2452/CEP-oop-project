@@ -21,7 +21,7 @@ class Signup:
         
         if image != None:
             self.image = ImageTk.PhotoImage(Image.open(image)).resize((360, 600))
-            self.image_label = Label(self.form_frame, image = self.image).pack(pady = 10)
+            self.image_label = Label(self.form_frame, image=self.image).pack(pady=10)
 
         self.signup_form = LabelFrame(self.form_frame, text="SIGN UP", font=("Times", "22", "bold"))
 
@@ -83,7 +83,7 @@ class Signup:
             self.image = ImageTk.PhotoImage(Image.open(image)).resize((360,600))
             self.image_label = Label(self.form_frame, image = self.image).pack(pady = 10)
 
-        self.signup_form = LabelFrame(self.form_frame, text="SIGN UP", font=("Times", "22", "bold"), labelanchor = "n")
+        self.signup_form = LabelFrame(self.form_frame, text="SIGN UP", font=("Times", "22", "bold"), labelanchor="n")
 
         self.subheader_lab = Label(self.signup_form,
                                    text="Please fill in this form to create an account!",

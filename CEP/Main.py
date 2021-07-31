@@ -35,9 +35,10 @@ class Main(Tk):
                        font=("Times", "30", "italic"), bg=windowbg).pack(pady=10)
         
 
+
         self.options = ("Customer", "Seller")
         self.option = StringVar()
-        self.frame_option = ttk.Combobox(self, textvar=self.option, values=self.options, font=("goudy old style",13),justify=CENTER,state="readonly")
+        self.frame_option = ttk.Combobox(self, textvar=self.option, values=self.options, font=("goudy old style", 13), justify=CENTER,state="readonly")
         self.frame_option.current(0)
         self.frame_option.bind("<<ComboboxSelected>>", self.comboclick)
         self.frame_option.place(x=520, y=115)
@@ -52,7 +53,6 @@ class Main(Tk):
         
         
     def comboclick(self,event):
-        
         self.login_system = self.option.get()
         if self.login_system == "Seller":
             self.usernameframe.destroy()

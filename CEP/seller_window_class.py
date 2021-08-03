@@ -11,13 +11,15 @@ from filing import *
 from random import randint
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno, showerror, showinfo, askquestion
+from Exceptions import *
+import PIL.Image
 
 # ******************************************   **************************************
 
 
 class SellerGui(Tk):
    
-    def __init__(self, theme="light grey", shopname=" My Shop", seller_info=[]):
+    def __init__(self, theme="light grey", seller_info=[]):
 
         # =========================== Setting up the Screen =======================
         
@@ -29,7 +31,11 @@ class SellerGui(Tk):
         # super().iconbitmap(icon)
         super().maxsize(width=1366, height=768)
         super().minsize(width=1366, height=768)
-        super().config(background=("#FFFFFF"))
+        super().config(background=("#9C27B0"))
+        
+        # -----------------------------     ------------------------------------
+        
+        self.credit_label = Label(self, text="Created By", fg="white", bg="grey").pack(side=BOTTOM, fill=X)
 
         # ========================= 
 
@@ -38,26 +44,22 @@ class SellerGui(Tk):
         self.sort_var = StringVar()
         self.count = 1
         self.sort_list = ("category", "any option2")
-        self.add_icon_pic = ImageTk.PhotoImage(Image.open("add_icon.png").resize((20, 20), Image.ANTIALIAS))
-        self.shop_lab_image = ImageTk.PhotoImage(Image.open("shop_label_image.png").resize((40, 40), Image.ANTIALIAS))
+        self.add_icon_pic = PIL.Image.open("images/add_product.jpeg").resize((20, 20), PIL.Image.ANTIALIAS)
+        self.add_icon_pic = ImageTk.PhotoImage(self.add_icon_pic)
+        self.shop_lab_image = PIL.Image.open("images/shop_pic.jpeg")
+        self.shop_lab_image = self.shop_lab_image.resize((40, 40), PIL.Image.ANTIALIAS)
+        self.shop_lab_image = ImageTk.PhotoImage(self.shop_lab_image)
 
         # =========================
         
         # Label for name of the shop
-       
+        print(self.shop_lab_image)
         self.main_lab = Label(self, text=f"{self.seller_info[1]}", font=("Times", "23", "bold"),
-                              bd=4, image=self.shop_lab_image, pady=3,
+                              bd=4, image=self.shop_lab_image,
                               bg=self.common_color, compound=LEFT)
         self.main_lab.pack(fill=X)
 
-        # =========================== Logout button ==========================
-        self.logout_pic = ImageTk.PhotoImage(Image.open("logout_pic.jpg").resize((142, 39), Image.ANTIALIAS))
-        self.logout_button = Button(self, image=self.logout_pic, bd=0, bg=self.common_color)
-        self.logout_button.place(x=1180, y=8)
-
-        # ===============================
-
-        # sub frame for seller options, logout and sort
+        # sub frame for seller options and sort
         self.sort_frame = Frame(self, bg=self.common_color, pady=10, bd=2)
         self.sort_frame.pack(fill=X, pady=5)
 
@@ -71,28 +73,30 @@ class SellerGui(Tk):
         self.sort_lab.pack(side=RIGHT, padx=10)
 
         # buttons inside the frame
-        self.button_frame = Frame(self, bd=5, bg=self.common_color)
-        self.button_frame.pack(fill=Y, side=LEFT, padx=3)
+        self.button_frame = Frame(self, pady=20, bd=5, bg=self.common_color)
+        self.button_frame.pack(fill=Y, side=LEFT, pady=1)
 
         # add product image on the button
-        self.add_product_button = Button(self.button_frame, text="Add Product", padx=20, command=self.add_prod ,
+        self.add_product_button = Button(self.button_frame, text="Add Product", padx=20, command=self.add_prod  ,
                                          font=("Times", "18", "bold italic"), activeforeground="white",
                                          relief=GROOVE, bg="#03A9F4", activebackground="#03A9F4",
-                                         disabledforeground="white", width=230, fg="white", image=self.add_icon_pic, compound=LEFT)
-        self.add_product_button.grid(row=4, column=0, pady=15)
+                                         disabledforeground="white", width=150, fg="white", image=self.add_icon_pic, compound=LEFT)
+        self.add_product_button.grid(row=0, column=0, pady=15)
 
-        # edit pic
-        edit_pic = ImageTk.PhotoImage(Image.open("edit_icon_pic.png").resize((32, 32), Image.ANTIALIAS))
 
-        self.edit_button = Button(self.button_frame, text="Edit Account Info", padx=20, image=edit_pic,
-                                  font=("Times", "18", "bold italic"), compound=LEFT,
-                                  relief=GROOVE, bg="#03A9F4", fg="white", command=self.edit_info)
-        self.edit_button.grid(row=5, column=0, pady=15)
+        self.edit_pic = PIL.Image.open("edit_pic.png").resize((20, 20), PIL.Image.ANTIALIAS)
+        self.edit_pic = ImageTk.PhotoImage(self.edit_pic)
 
-        self.viewsales_button = Button(self.button_frame, text="View Sales", padx=20,
-                                       font=("Times", "18", "bold italic"),
-                                       relief=GROOVE, bg="#03A9F4", fg="white")
-        self.viewsales_button.grid(row=6, column=0, pady=15)
+
+        self.b2 = Button(self.button_frame, text="Edit Account Info", padx=20, image=self.edit_pic,
+                         font=("Times", "18", "bold italic"), compound=LEFT,
+                         relief=GROOVE, bg="#03A9F4", fg="white", command=self.edit_info)
+        self.b2.grid(row=1, column=0, pady=15)
+
+        self.b3 = Button(self.button_frame, text="View Sales", padx=20,
+                         font=("Times", "18", "bold italic"),
+                         relief=GROOVE, bg="#03A9F4", fg="white")
+        self.b3.grid(row=2, column=0, pady=15)
         
         # ===================================== Treeview for Data =======================================
         
@@ -103,7 +107,8 @@ class SellerGui(Tk):
         self.style = ttk.Style()
         self.style.configure("Treeview", background="#D3D3D3", foreground="black", fieldbackground="white", rowheight=25)
         self.style.theme_use("default")
-        self.style.configure("Treeview.Heading", font=("Times", 18))
+        self.style.configure("Treeview.Heading", font=("Times", 15))
+        self.style.configure(".", font="Times 12")
         # ---------------------------------   ----------------------------
             
         self.yscrollbar = Scrollbar(self.treeview_frame)
@@ -119,11 +124,11 @@ class SellerGui(Tk):
         
         #
         for i in range(len(col)):
-            self.treeview.column(col[i], width=len(col[i])+150, anchor=W)
+            self.treeview.column(col[i], width=len(col[i])+2, anchor=W)
             
         #
         for i in range(len(col)):
-            self.treeview.heading(col[i], text=col[i])
+            self.treeview.heading(col[i], text=col[i], anchor=CENTER)
 
         #
         if os.path.exists(f"Products/{self.seller_info[2]}.csv"):
@@ -139,7 +144,7 @@ class SellerGui(Tk):
         self.yscrollbar.config(command=self.treeview.yview)
 
         #
-        self.treeview_frame.pack(fill=BOTH, side=RIGHT, pady=2)
+        self.treeview_frame.pack(fill=BOTH, pady=1)
 
         # -------------------------------     ----------------------------------------
     
@@ -224,7 +229,7 @@ class Product_Add:
         self.product_quantity = StringVar()
         
         #
-        self.pic = ImageTk.PhotoImage(Image.open("addpic.jpg").resize((220, 220), Image.ANTIALIAS))
+        self.pic = ImageTk.PhotoImage(PIL.Image.open("addpic.png").resize((220, 220), PIL.Image.ANTIALIAS))
         self.product_pic_path = ""
         
         #
@@ -327,7 +332,7 @@ class Product_Add:
         # -----------------------------
 
         if self.product_pic_path != "":
-            self.product_pic = ImageTk.PhotoImage(Image.open(self.product_pic_path).resize((220, 220), Image.ANTIALIAS))
+            self.product_pic = ImageTk.PhotoImage(PIL.Image.open(self.product_pic_path).resize((220, 220), PIL.Image.ANTIALIAS))
             self.default_pic.config(image=self.product_pic)
     
     
@@ -358,8 +363,19 @@ class Product_Add:
                     # -----------------------------
 
                     self.seller_product_file = Filing(dir_name="Products")
-                    self.seller_product_file.general_filing(file_name=self.seller_info[2], col_list=["S.No", "Product ID", "Category", "Product Name", "Product Price", "Quantity", "Description"],
+                    self.seller_product_file.general_filing(file_name=self.seller_info[2],
+                                                            col_list=["S.No", "Product ID", "Category", "Product Name",
+                                                                      "Product Price", "Quantity", "Description"],
                                                             data_list=[self.i, self.c, self.n, self.p, self.q, self.d])
+
+
+                    self.cat_product_file = Filing(dir_name="Categories")
+                    self.cat_product_file.general_filing(file_name=self.c,
+                                                         col_list=["Product ID", "Product Name", "Shop Name",
+                                                                   "Product Price", "Quantity", "Product Description"],
+                                                         data_list=[self.i, self.n, self.seller_info[1], self.p, self.q,
+                                                                    self.d])
+
 
                     # ------------------------------
 
@@ -418,7 +434,7 @@ class SellerInfo:
         
         if pic != None:
             # heading pic
-            self.edit_pic = ImageTk.PhotoImage(Image.open(pic).resize((32, 32), Image.ANTIALIAS))
+            self.edit_pic = ImageTk.PhotoImage(PIL.Image.open(pic).resize((32, 32), PIL.Image.ANTIALIAS))
             self.l1 = Label(self.root, text="  Edit Account Info", image=self.edit_pic, compound=LEFT, font=("Times New Roman", 20, "bold"), bg="light grey").pack(fill=X)
         else:
             self.l1 = Label(self.root, text="  Edit Account Info", font=("Times New Roman", 20, "bold"), bg="light grey").pack(fill=X)

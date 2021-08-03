@@ -1,6 +1,7 @@
+
+
 from csv import *
 import os
-from signup_class import Signup
 from tkinter.messagebox import showerror, showinfo
 import pickle
 

@@ -155,7 +155,7 @@ class SellerGui(Tk):
     def add_prod(self):
         self.add_product_scr = Toplevel()
         
-        self.add_product = Product_Add(self.add_product_scr, seller_info=self.seller_info)
+        self.add_product = ProductAdd(self.add_product_scr, seller_info=self.seller_info)
         self.confirm_add_button = Button(self.add_product.add_window, text="Add", command=self.prod_file,
                                     font=("Times", "20"), fg="white",
                                     padx=20, width=10, bg="#FF4081", pady=5)
@@ -198,9 +198,9 @@ class SellerGui(Tk):
 
 # ***********************************************   **********************************************
 
-class Product_Add:
+class ProductAdd:
     
-    def __init__(self, root=None, max_width=835, max_height=630, seller_info = []):
+    def __init__(self, root=None, max_width=835, max_height=630, seller_info=[]):
 
         """Opens the top level window for add product button"""
 
@@ -252,7 +252,7 @@ class Product_Add:
 
         
         # option menu for the category of products
-        self.cat_list = ("Grocery", "Fashion", "Beauty & Personal Care", "Computers & Accessories")
+        self.cat_list = ("Grocery", "Fashion", "Beauty Products", "Computers & Accessories", "Home Appliances")
         self.cat.set("Select a category")
 
 

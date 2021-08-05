@@ -1,41 +1,3 @@
-def show_product(self):
-    self.lst = [["mango", 40, "80 Rs per kg, sweet and juicy", "mango.jpg"],
-                ["Apple", 40, "40 Rs per kg, sweet and fresh", "apples.jpg"],
-                ]
-    if self.lst:
-        # Main product frame where all products are shown
-
-        self.canvas_frame = Frame(self.root)
-        self.canvas = Canvas(self.canvas_frame, bg="pink")
-
-        for product in range(len(self.lst)):
-            self.show_product_frame = Frame(self.canvas)
-            self.pic_frame = Frame(self.show_product_frame)
-            self.product_pic = ImageTk.PhotoImage(
-                PIL.Image.open(self.lst[product][3]).resize((120, 120), PIL.Image.ANTIALIAS))
-            self.product_pic_lab = Label(self.pic_frame, image=self.product_pic)
-            self.product_pic_lab.pack()
-            self.pic_frame.pack(side=LEFT)
-
-            self.lab1 = Label(self.show_product_frame, text=self.lst[product][0], font=("Times", 18))
-            self.lab2 = Label(self.show_product_frame, text=self.lst[product][1], font=("Times", 18))
-            self.lab3 = Label(self.show_product_frame, text=self.lst[product][2], font=("Times", 18))
-            self.lab1.pack()
-            self.lab2.pack()
-            self.lab3.pack()
-            self.show_product_frame.pack(pady=5)
-
-        self.canvas.pack()
-
-        self.canvas_frame.pack(pady=25)
-
-
-    else:
-        self.nothing_lab = Label(self.root, text="NOTHING TO SHOW")
-        self.nothing_lab.pack()
-
-        # ===================================== ============================
-
 from tkinter import *
 from PIL import Image, ImageTk
 import PIL.Image
@@ -45,26 +7,28 @@ from csv import *
 from filing import *
 import pickle
 from seller_window_class import *
+from tkinter import ttk
 
 
-class CustomerHomePage:
+class CustomerHomePage(Tk):
 
-    def __init__(self, root=None):
+    def __init__(self):
+        # =========================== Setting up the Screen =======================
         left_bg = "#FFFFFF"
-        self.root = root
-        self.root.title("Customer")
-        width = self.root.winfo_screenwidth()
-        height = self.root.winfo_screenheight()
-        self.root.geometry(f"{width}x{height}")
+        super().__init__()
+        super().title("seller")
+        width = super().winfo_screenwidth()
+        height = super().winfo_screenheight()
+        super().geometry(f"{width}x{height}")
         # super().iconbitmap(icon)
-        self.root.maxsize(width=width, height=height)
-        self.root.minsize(width=width, height=height)
-        self.root.config(background=("white"))
+        super().maxsize(width=width, height=height)
+        super().minsize(width=width, height=height)
+        super().config(background=("white"))
 
 
         # ========================= =================================
         # Title Frame on the left side
-        self.left_frame = Frame(self.root, bg=left_bg)
+        self.left_frame = Frame(self, bg=left_bg)
 
         self.bluejay_pic = ImageTk.PhotoImage(PIL.Image.open("bird.png").resize((90, 90), PIL.Image.ANTIALIAS))
         self.title_lab = Label(self.left_frame, text="BLUE JAY  ", font=("Goudy Old Style", "29", "bold italic"),
@@ -82,12 +46,12 @@ class CustomerHomePage:
         # category buttons frame
         self.cat_frame = Frame(self.left_frame, bg=left_bg)
 
-        self.c1 = Button(self.cat_frame, text="All Categories", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
-        self.c2 = Button(self.cat_frame, text="Grocery", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
-        self.c3 = Button(self.cat_frame, text="Fashion", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
-        self.c4 = Button(self.cat_frame, text="Beauty products", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
-        self.c5 = Button(self.cat_frame, text="Computers & Accessories", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
-        self.c6 = Button(self.cat_frame, text="Home Appliances", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT)
+        self.c1 = Button(self.cat_frame, text="All Categories", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c1)
+        self.c2 = Button(self.cat_frame, text="Grocery", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c2)
+        self.c3 = Button(self.cat_frame, text="Fashion", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c3)
+        self.c4 = Button(self.cat_frame, text="Beauty products", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c4)
+        self.c5 = Button(self.cat_frame, text="Computers & Accessories", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c5)
+        self.c6 = Button(self.cat_frame, text="Home Appliances", font=("Times", "15"), bg=left_bg, anchor="w", width=27, relief=FLAT, command=self.func_c6)
 
         buttons = (self.c1, self.c2, self.c3, self.c4, self.c5, self.c6)
         for i in range(6):
@@ -106,7 +70,7 @@ class CustomerHomePage:
         self.left_frame.pack(fill=Y, side=LEFT, pady=1)
 
         #=============================== The Top Frame  ==================================
-        self.top_frame = Frame(self.root, bg=left_bg)
+        self.top_frame = Frame(self, bg=left_bg)
 
         # ================================   ==============================
 
@@ -151,6 +115,10 @@ class CustomerHomePage:
                                 font=("Times New Roman", 14)).grid(row=0, column=2, padx=125)
 
         self.time_details_frame.pack(fill=X)
+        
+        self.product_pic = ""
+        self.categories_list = list(filter(lambda x: x.endswith(".csv"), os.listdir("Categories")))
+        
         self.top_frame2.pack(fill=X, pady=3)
 
         self.top_frame.pack(fill=X)
@@ -160,55 +128,155 @@ class CustomerHomePage:
         # ====================================  =====================================
 
 
-
-        self.products_frame = Frame(self.root, bg="white")
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        self.all_products_pic = []
+        self.all_catetegories_data = []
 
         if os.path.isdir("Categories"):
-            # ==========================   =======================
-            # inside product frame
-            self.in_product_frame = Frame(self.products_frame, bg="khaki")
-            self.in_product_frame.pack(padx=100, pady=100)
-            # -----------------------  ------------------------------
+            self.show_product()
+    # ==========================   =======================
 
-            self.categories_list = list(filter(lambda x: x.endswith(".csv"), os.listdir("Categories")))
+    def show_product(self, cat=""):
+        
+        # ---------------------    -------------------------------
+        self.categories_list = list(filter(lambda x: x.endswith(".csv"), os.listdir("Categories")))
+        if cat != "":
+            if os.path.exists(f"Categories/{cat}.csv"):
+                cat += ".csv"
+                self.categories_list = [cat]
+            else:
+                self.categories_list = []
+        
+        
+        # ---------------------    -------------------------------
+        
+        # inside product frame
+        self.show_prod_canvas = Canvas(self.products_frame, bg="khaki")
+        self.show_prod_canvas.pack(side=LEFT, fill=BOTH, expand=1, padx=70, pady=50)
+        
+        self.scroll_bar = ttk.Scrollbar(self.products_frame, orient="vertical", command=self.show_prod_canvas.yview)
+        self.scroll_bar.pack(side=RIGHT, fill=Y)
+        
+        self.show_prod_canvas.config(yscrollcommand=self.scroll_bar.set)
+        self.show_prod_canvas.bind("<Configure>", lambda e: self.show_prod_canvas.configure(scrollregion=self.show_prod_canvas.bbox("all")))
+        
+        self.in_product_frame = Frame(self.show_prod_canvas, bg="khaki")
+        self.show_prod_canvas.create_window((0,0), window=self.in_product_frame, anchor=NW)
+        
+        # -----------------------  ------------------------------
+        self.all_products_pic = []
+        self.all_catetegories_data = []    
+        for i in self.categories_list:
+            self.category_data = Filing.file_read(dir_name="Categories", file_name=i[:-4])
+            for j in self.category_data[1:]:
+                self.all_catetegories_data.append(j[1:])    # product : [id, name, shop name, price, quantity, description]
 
-            self.all_catetegories_data = []
-            for i in self.categories_list:
-                self.category_data = Filing.file_read(dir_name="Categories", file_name=i[:-4])
-                for j in self.category_data[1:]:
-                    self.all_catetegories_data.append(j[1:])    # product : [id, name, shop name, price, quantity, description]
+        for i in range(len(self.all_catetegories_data)):
+            self.product_pic = ""
+            if os.path.isdir("Product Pics"):
+                if os.path.exists(f"Product Pics/{self.all_catetegories_data[i][0]}.pkl"):
+                    self.product_pic = Filing.pic_file_read(dir_name="Product Pics",
+                                                            file_name=self.all_catetegories_data[i][0])
 
-            for i in range(len(self.all_catetegories_data)):
-                self.product_pic = ""
-                if os.path.isdir("Products Pic"):
-                    if os.path.exists(f"Products Pic/{self.all_catetegories_data[i][0]}.pkl"):
-                        self.product_pic = Filing.pic_file_read(dir_name="Products Pic",
-                                                                file_name=self.all_catetegories_data[i][0])
+                    self.product_pic = PIL.Image.open(self.product_pic)
+                    self.product_pic = self.product_pic.resize((120, 120), PIL.Image.ANTIALIAS)
+                    self.product_pic = ImageTk.PhotoImage(self.product_pic)
 
-                if self.product_pic == "":
-                    self.product_pic = "addpic.png"
+            if self.product_pic == "":
+                self.product_pic = "addpic.png"
                 self.product_pic = ImageTk.PhotoImage(PIL.Image.open(self.product_pic).resize((120, 120), PIL.Image.ANTIALIAS))
 
-                if i % 2 == 0:
-                    self.product_button = Button(self.in_product_frame, image=self.product_pic,
-                                                 text=f"{self.all_catetegories_data[i][1]}\n{self.all_catetegories_data[i][2]}\nRs.{self.all_catetegories_data[i][3]}",
-                                                 font=("Times", 16, "bold"),bg="khaki", justify=LEFT, anchor=W, padx=1, pady=8,
-                                                 compound=TOP, relief=FLAT, bd=2).grid(row=int(i / 2), column=0)
-                else:
-                    self.product_button = Button(self.in_product_frame, image=self.product_pic,
-                                                 text=f"{self.all_catetegories_data[i][1]}\n{self.all_catetegories_data[i][2]}\nRs.{self.all_catetegories_data[i][3]}",
-                                                 font=("Times", 16, "bold"), justify=LEFT, anchor=W, padx=1, pady=8,
-                                                 compund=TOP, relief=FLAT, bd=2, bg="white").grid(row=int(i / 2), column=1)
+            self.all_products_pic.append(self.product_pic)
 
-        self.products_frame.pack(side=LEFT, fill=BOTH)
+            if i % 2 == 0:
+                self.product_button = Button(self.in_product_frame, image=self.all_products_pic[i],
+                                             text=f"{self.all_catetegories_data[i][1]}\n{self.all_catetegories_data[i][2]}\nRs.{self.all_catetegories_data[i][3]}",
+                                             font=("Times", 16, "bold"), bg="khaki", justify=LEFT, anchor=W, padx=1, pady=8,
+                                             compound=TOP, relief=FLAT, bd=2,
+                                             command=self.prod_details)
+                self.product_button.grid(row=int(i / 2), column=0, padx=23, pady=15, sticky=W)
+                self.product_button.config(image=self.all_products_pic[i])
+            else:
+                self.product_button = Button(self.in_product_frame, image=self.all_products_pic[i],
+                                             text=f"{self.all_catetegories_data[i][1]}\n{self.all_catetegories_data[i][2]}\nRs.{self.all_catetegories_data[i][3]}",
+                                             font=("Times", 16, "bold"), justify=LEFT, anchor=W, padx=1, pady=8,
+                                             compound=TOP, relief=FLAT, bd=2, bg="khaki",
+                                             command=self.prod_details)
+                self.product_button.grid(row=int(i / 2), column=1, padx=23, pady=15, sticky=W)
+                self.product_button.config(image=self.all_products_pic[i])
 
+        # =============================     =====================================
+    def func_c1(self):
+        """The function for all categories to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+
+        self.show_product()
+
+    def func_c2(self):
+        """The function for grocery to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        if os.path.exists("Categories/Grocery.csv"):
+            self.show_product(cat="Grocery")
+        else:
+            self.show_product(cat=" ")
+
+    def func_c3(self):
+        """The function for fashion to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        if os.path.exists("Categories/Fashion.csv"):
+            self.show_product(cat="Fashion")
+        else:
+            self.show_product(cat=" ")
+
+    def func_c4(self):
+        """The function for beauty products to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        if os.path.exists("Categories/Beauty Products.csv"):
+            self.show_product(cat="Beauty Products")
+        else:
+            self.show_product(cat=" ")
+
+    def func_c5(self):
+        """The function for computer & Accessories to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        if os.path.exists("Categories/Computers & Accessories.csv"):
+            self.show_product(cat="Computers & Accessories")
+        else:
+            self.show_product(cat=" ")
+
+    def func_c6(self):
+        """The function for home appliances to show up"""
+        self.products_frame.destroy()
+
+        self.products_frame = Frame(self, bg="white")
+        self.products_frame.pack(fill=BOTH, expand=1)
+        if os.path.exists("Categories/Home Appliances.csv"):
+            self.show_product(cat="Home Appliances")
+        else:
+            self.show_product(cat=" ")
 
 
 
         # ==================================    =========================================
-    def prod_details(self, prod_info=[]):
+    def prod_details(self):
         root = Toplevel(self)
-        self.product_deatil = ProductInfo(self, product_info=prod_info)
+        self.product_detail = ProductInfo(self, product_info=self.all_catetegories_data[0])
         root.mainloop()
 
 
@@ -224,18 +292,18 @@ class ProductInfo:
                  windowbg="#FFFFFF", product_info=[], seller_info=[], product_pic=None):
         # =============================================    ===============================
 
-        self.root = root
-        self.root.title(title)
-        self.root.grab_set()
-        self.root.protocol("WM_DELETE_WINDOW", lambda: SellerGui.callback(self.root))
+        self = root
+        self.title(title)
+        self.grab_set()
+        self.protocol("WM_DELETE_WINDOW", lambda: SellerGui.callback(self))
 
-        self.root.geometry(f"{max_width}x{max_height}+{c_width}+{c_height}")
-        self.root.maxsize(max_width, max_height)
-        self.root.minsize(max_width, max_height)
+        self.geometry(f"{max_width}x{max_height}+{c_width}+{c_height}")
+        self.maxsize(max_width, max_height)
+        self.minsize(max_width, max_height)
 
         if icon != None:
-            self.root.iconbitmap(icon)
-        self.root.config(bg=windowbg)
+            self.iconbitmap(icon)
+        self.config(bg=windowbg)
 
         # ========================================    ======================================
 
@@ -245,12 +313,12 @@ class ProductInfo:
 
         # ============================================    ================================
 
-        self.heading = Label(self.root, text="Product Detail", font=("Times", 20, "bold"), bg="lightgrey").pack(
+        self.heading = Label(self, text="Product Detail", font=("Times", 20, "bold"), bg="lightgrey").pack(
             side=TOP, fill=X)
 
         # ===========================================     =================================
 
-        self.pic_prod_frame = Frame(self.root, bg=windowbg, pady=3)
+        self.pic_prod_frame = Frame(self, bg=windowbg, pady=3)
         self.pic_prod_frame.pack(pady=17, padx=10, anchor=NW, fill=X)
 
         # -----------------------------    -------------------------------
@@ -298,10 +366,9 @@ class ProductInfo:
 
 
 if __name__ == '__main__':
+    o = CustomerHomePage()
+    o.mainloop()
 
-    root = Tk()
-    o = CustomerHomePage(root=root)
-    root.mainloop()
 
 
 

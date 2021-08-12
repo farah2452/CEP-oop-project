@@ -1,5 +1,5 @@
 
-# **************************************   ***************************************
+# ************************************** Importing Modules ***************************************
 
 from tkinter import *
 from PIL import Image, ImageTk
@@ -13,9 +13,11 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno, showerror, showinfo, askquestion
 from Exceptions import *
 import PIL.Image
+import Main
+from signin_class import *
 
-# ******************************************   **************************************
 
+# ****************************************** Class for Seller Window **************************************
 
 class SellerGui(Tk):
    
@@ -33,11 +35,12 @@ class SellerGui(Tk):
         super().minsize(width=1366, height=768)
         super().config(background=("#9C27B0"))
         
-        # -----------------------------     ------------------------------------
+        # ----------------------------- Credits ------------------------------------
         
         self.credit_label = Label(self, text="Created By", fg="white", bg="grey").pack(side=BOTTOM, fill=X)
 
-        # ========================= 
+
+        # ========================= Assigning Variables =================================
 
         self.common_color = theme
         self.seller_info = seller_info
@@ -49,15 +52,25 @@ class SellerGui(Tk):
         self.shop_lab_image = PIL.Image.open("images/shop_pic.jpeg")
         self.shop_lab_image = self.shop_lab_image.resize((40, 40), PIL.Image.ANTIALIAS)
         self.shop_lab_image = ImageTk.PhotoImage(self.shop_lab_image)
+        self.edit_pic = PIL.Image.open("images/edit_pic.png").resize((20, 20), PIL.Image.ANTIALIAS)
+        self.edit_pic = ImageTk.PhotoImage(self.edit_pic)
+        self.logoutpic = ImageTk.PhotoImage(PIL.Image.open("images/logout_pic.png").resize((100, 40), PIL.Image.ANTIALIAS))
 
-        # =========================
+        # ========================= Designing the head frames ===================
         
         # Label for name of the shop
-        print(self.shop_lab_image)
         self.main_lab = Label(self, text=f"{self.seller_info[1]}", font=("Times", "23", "bold"),
                               bd=4, image=self.shop_lab_image,
                               bg=self.common_color, compound=LEFT)
         self.main_lab.pack(fill=X)
+
+        # ============================= logout button ============================
+
+        self.seller_logout_button = Button(self, bd=0, bg=self.common_color,
+                                           image=self.logoutpic, command=self.seller_logout)
+        self.seller_logout_button.place(x=1235, y=5)
+
+
 
         # sub frame for seller options and sort
         self.sort_frame = Frame(self, bg=self.common_color, pady=10, bd=2)
@@ -67,10 +80,12 @@ class SellerGui(Tk):
         self.sort_lab = Label(self.sort_frame, text="Sort Products By", font=("Times", "13"),
                               bg=self.common_color)
         
-        self.sort_option_menu = OptionMenu(self.sort_frame, self.sort_var, *self.sort_list)
+        self.sort_option_menu = OptionMenu(self.sort_frame, self.sort_var, *self.sort_list, command=self.sort_cat)
         self.sort_option_menu.config(width=5, height=1, relief=RIDGE)
         self.sort_option_menu.pack(side=RIGHT, padx=20)
         self.sort_lab.pack(side=RIGHT, padx=10)
+
+        # ============================== Designing Buttons Frame ===================
 
         # buttons inside the frame
         self.button_frame = Frame(self, pady=20, bd=5, bg=self.common_color)
@@ -80,57 +95,53 @@ class SellerGui(Tk):
         self.add_product_button = Button(self.button_frame, text="Add Product", padx=20, command=self.add_prod  ,
                                          font=("Times", "18", "bold italic"), activeforeground="white",
                                          relief=GROOVE, bg="#03A9F4", activebackground="#03A9F4",
-                                         disabledforeground="white", width=150, fg="white", image=self.add_icon_pic, compound=LEFT)
+                                         disabledforeground="white", width=210, fg="white", image=self.add_icon_pic, compound=LEFT)
         self.add_product_button.grid(row=0, column=0, pady=15)
-
-
-        self.edit_pic = PIL.Image.open("edit_pic.png").resize((20, 20), PIL.Image.ANTIALIAS)
-        self.edit_pic = ImageTk.PhotoImage(self.edit_pic)
-
-
+        # Edit Info Button        
         self.b2 = Button(self.button_frame, text="Edit Account Info", padx=20, image=self.edit_pic,
-                         font=("Times", "18", "bold italic"), compound=LEFT,
+                         font=("Times", "18", "bold italic"), compound=LEFT, width=210,
                          relief=GROOVE, bg="#03A9F4", fg="white", command=self.edit_info)
         self.b2.grid(row=1, column=0, pady=15)
-
+        # View Sales Button
         self.b3 = Button(self.button_frame, text="View Sales", padx=20,
-                         font=("Times", "18", "bold italic"),
-                         relief=GROOVE, bg="#03A9F4", fg="white")
+                         font=("Times", "18", "bold italic"), width=15,
+                         relief=GROOVE, bg="#03A9F4", fg="white", command=self.view_sales)
         self.b3.grid(row=2, column=0, pady=15)
         
         # ===================================== Treeview for Data =======================================
         
         self.treeview_frame = Frame(self)
         
-        # ----------------------------------    ------------------------------
+        # ---------------------------------- Styling the Treeview   ------------------------------
         
         self.style = ttk.Style()
         self.style.configure("Treeview", background="#D3D3D3", foreground="black", fieldbackground="white", rowheight=25)
         self.style.theme_use("default")
         self.style.configure("Treeview.Heading", font=("Times", 15))
         self.style.configure(".", font="Times 12")
-        # ---------------------------------   ----------------------------
+        
+        # --------------------------------- Adding Scrollbar  ----------------------------
             
         self.yscrollbar = Scrollbar(self.treeview_frame)
         self.yscrollbar.pack(side=RIGHT,fill=Y)
         
-        # -----------------------------------    ------------------------------------------
+        # ----------------------------------- Adding Trrview ------------------------------------------
         
-        #
+        # trrview columns
         col = ("S.No", "Product ID", "Category", "Product Name", "Product Price", "Quantity", "Description")
         
-        #
+        # Creating Treeview
         self.treeview = ttk.Treeview(self.treeview_frame, height=29, show="headings", columns=col, yscrollcommand=self.yscrollbar.set)
         
-        #
+        # Range for treeview columns
         for i in range(len(col)):
             self.treeview.column(col[i], width=len(col[i])+2, anchor=W)
             
-        #
+        # Range for treeview headings
         for i in range(len(col)):
             self.treeview.heading(col[i], text=col[i], anchor=CENTER)
 
-        #
+        # inserting Data into Treeview
         if os.path.exists(f"Products/{self.seller_info[2]}.csv"):
             self.products = Filing.file_read(dir_name="Products", file_name=self.seller_info[2])
             if len(self.products) > 1:
@@ -138,56 +149,123 @@ class SellerGui(Tk):
                     self.treeview.insert(parent="", index="end", iid=self.count, text="", values=(self.count, i[1], i[2], i[3], i[4], i[5], i[6]))
                     self.count += 1
         
-        #
+        # Packing treeview
         self.treeview.pack(fill=BOTH)
-        #
+        # packing Scrollbar
         self.yscrollbar.config(command=self.treeview.yview)
 
-        #
+        # Packing main Frame
         self.treeview_frame.pack(fill=BOTH, pady=1)
 
-        # -------------------------------     ----------------------------------------
+        # ------------------------------- Ending Seller Window ----------------------------------------
     
         super().mainloop()
 
-    # ==========================================   ===========================================
+    def seller_logout(self):
+
+        self.destroy()
+        Main.Main()
+
+    # =================================== Sorting Products =============================
+    
+    def sort_cat(self):
+        
+        self.sort_opt = self.sort_var.get()
+        self.file_data = []
+        if os.path.exists(f"Products/{self.sort_opt}.csv"):
+            self.file_data = Filing.file_read(dir_name="Products", file_name=self.sort_opt)
+            self.file_data = self.file_data[1:]
+            self.file_data = list(map(lambda x: x[1:], self.file_data))
+            self.file_data = list(filter(lambda x : x[2]==self.sort_opt, self.file_data))            
+        
+            if len(self.file_data)>0:
+                for record in self.treeview.get_children():
+                    self.treeview.delete(record)    
+                self.count=1
+                for i in self.file_data:
+                    self.treeview.insert(parent="",index="end",iid=self.count,text="",values=(self.count,i[0],i[1],i[2],i[3],i[4],i[5],i[6]))
+                    self.count+=1
+
+
+
+
+
+    # ========================================== Function for Adding Product  ===========================================
     
     def add_prod(self):
-        self.add_product_scr = Toplevel()
         
-        self.add_product = ProductAdd(self.add_product_scr, seller_info=self.seller_info)
-        self.confirm_add_button = Button(self.add_product.add_window, text="Add", command=self.prod_file,
-                                    font=("Times", "20"), fg="white",
-                                    padx=20, width=10, bg="#FF4081", pady=5)
+        self.seller_account = []
+        if os.path.exists("Accounts Info/Seller Accounts.csv"):        
+            
+            # ======================== Getting the Seller Data =========================
+            
+            self.all_cust_info = Filing.file_read(dir_name="Accounts Info", file_name="Seller Accounts")
+            self.seller_account = list(filter(lambda x: x[-4]==self.seller_info[-3] and x[-3]==self.seller_info[-2] and x[-2]==self.seller_info[-1],self.all_cust_info))
+            
+            if len(self.seller_account)!=0: 
+            
+            # ===================== Associting the Product Addition Window ======================
+            
+                self.add_product_scr = Toplevel()
+                
+                self.add_product = ProductAdd(self.add_product_scr, seller_info=self.seller_info)
+                
+                self.confirm_add_button = Button(self.add_product.add_window, text="Add", command=self.prod_file,
+                                            font=("Times", "20"), fg="white",
+                                            padx=20, width=10, bg="#FF4081", pady=5)
+                self.confirm_add_button.place(x=350, y=555)
 
-        self.confirm_add_button.place(x=350, y=555)
+                self.add_product_scr.mainloop()
 
-        self.add_product_scr.mainloop()
-
-    # ==========================================    ===========================================
+            else:
+                showerror("Data Missing", "Please provide the account info.", parent=self)
+                
+        else:
+             showerror("Data Missing", "Please provide the account info.", parent=self)
+                
+    # =============================== Function for Edit Seller Info ====================================
     
     def edit_info(self):
-        
+        # ------------------ Associating SellerInfo Class --------------
         self.edit_info_scr = Toplevel()
-        
         self.seller_info_edit = SellerInfo(self.edit_info_scr, max_width=1100, max_height=600, title=self.seller_info[2], seller_info=self.seller_info) 
-
         self.edit_info_scr.mainloop()
 
-    # ========================================   ========================================
+    # ======================================== Function for Product Addition Button  ========================================
     
     def prod_file(self):
         
+        # ==================== Adding Product into the file and Inserting it in the Treeview ===========
+         
         self.add_product.filing()
         
         if self.add_product.c != "Select a category" and self.add_product.n != "" and self.add_product.p != "" and self.add_product.q != "" and self.add_product.d != "" and self.add_product.d != "\n":
             self.treeview.insert(parent="", index="end", iid=self.count, text="", values=(self.count, self.add_product.i, self.add_product.c, self.add_product.n, self.add_product.p, self.add_product.q, self.add_product.d))
             self.count += 1
+            
+    # ======================================= Function for checking Sales ==================================
+    
+    def view_sales(self):
+        
+        self.seller_user = self.seller_info[2]
+        self.sales_list = []
+        if os.path.isdir(f"Sales/{self.seller_user}"):
+            self.sales_list = os.listdir(f"sales/{self.seller_user}")
+            self.sales_list = list(map(lambda x: x[:-4], self.shop_his_list))
+        
+        # ============== Associating Seller Sales Class ===================
+        
+        self.sales_history_screen = Toplevel()
+        
+        self.sales_history_window = SellerSales(self.sales_history_screen, filelist=self.sales_list, seller_username=self.seller_user, max_width=1150, max_height=600,
+                                                   treeviewcolumns=("S.No", "Product ID", "Product Name", "Shop Name", "Product Price", "Quantity", "Total Price"))
+        
+        self.sales_history_screen.mainloop()
 
 
 
 
-    # ==========================================    ==========================================
+    # ========================================== Static method for Window's Callback  ==========================================
         
     @staticmethod
     def callback(newwindow):
@@ -196,7 +274,7 @@ class SellerGui(Tk):
             newwindow.grab_release()
             newwindow.destroy()
 
-# ***********************************************   **********************************************
+# *********************************************** Class for Product Addition  **********************************************
 
 class ProductAdd:
     
@@ -204,22 +282,24 @@ class ProductAdd:
 
         """Opens the top level window for add product button"""
 
-        # ===============================   ===================================
+        # =============================== Setting up the Screen  ===================================
         
         self.add_window = root
         self.add_window.title("Add Product")
         self.add_window.grab_set()
         self.add_window.protocol("WM_DELETE_WINDOW", lambda: SellerGui.callback(self.add_window))
+   
         self.width = self.add_window.winfo_screenwidth()
         self.height = self.add_window.winfo_screenheight()
         self.cen_width = int((self.width/2) - (max_width/2))
         self.cen_height = int((self.height/2) - (max_height/2))
+   
         self.add_window.geometry(f"{max_width}x{max_height}+{self.cen_width}+{self.cen_height}")
         self.add_window.minsize(width=max_width, height=max_height)
         self.add_window.maxsize(width=max_width, height=max_height)
         self.add_window.config(bg="#FFFFFF")
 
-        # ==============================  ======================
+        # ============================== Assigning Variables ======================
 
         # cat for category of the product
         self.p_id = StringVar()
@@ -229,18 +309,19 @@ class ProductAdd:
         self.product_quantity = StringVar()
         
         #
-        self.pic = ImageTk.PhotoImage(PIL.Image.open("addpic.png").resize((220, 220), PIL.Image.ANTIALIAS))
+        self.pic = ImageTk.PhotoImage(PIL.Image.open("images/addpic.png").resize((220, 220), PIL.Image.ANTIALIAS))
         self.product_pic_path = ""
         
         #
         self.seller_info = seller_info
         
-        # ===========================   =========================
+        # =========================== Heading  =========================
         
         self.header_add_lab = Label(self.add_window, text="Add New Product",
                                     font=("Times", "16", "bold"), bg="light grey")
         self.header_add_lab.pack(fill=X)
 
+        # ==================== Frame for Entries =============================
 
         self.add_product_frame = Frame(self.add_window, bd=2, relief=RIDGE)
         self.add_product_frame.place(x=40, y=80)
@@ -317,33 +398,33 @@ class ProductAdd:
 
         
 
-    # ==============================================   =================================================    
+    # =================================== Function for Browsing photo =======================================    
         
     def browse_photo(self):
         
         """Chooses a picture from the system for the product photo.
         And returns the path of the file photo"""
         
-        # -------------------------
+        # -------------------------- Photo Selection ---------------
         
         self.product_pic_path = askopenfilename(parent=self.add_window, title='Choose a photo', initialdir='/',
                                         filetypes=(("PNG File (*.png)", "*.png"), ("JPEG File (*.jpg)", "*.jpg")))
 
-        # -----------------------------
+        # ----------------------------- Assigning path of the Pic ------------------
 
         if self.product_pic_path != "":
             self.product_pic = ImageTk.PhotoImage(PIL.Image.open(self.product_pic_path).resize((220, 220), PIL.Image.ANTIALIAS))
             self.default_pic.config(image=self.product_pic)
     
     
-    # =========================================   ======================================================
+    # ========================================= Function for Product Filing  ======================================================
     
     def filing(self):
         
         """Stores all the information of the product in the file,
         when add button is pressed"""
 
-        # =========================== 
+        # =========================== Assigning the variables ======================
         
         self.i = self.p_id.get()
         self.c = self.cat.get()
@@ -353,14 +434,16 @@ class ProductAdd:
         self.d = self.product_des.get(1.0, END)
         self.d = self.d[:-1]
 
-        # =====================================   
+        # ===================================== Saving Product Data ===================
+        
         try:
 
             if self.c != "Select a category" and self.n != "" and self.p != "" and self.q != "" and self.d != "" and self.d != "\n":
                 self.confirm = askquestion("Product Confirmation", "Do you confirm this information about the product?", parent=self.add_window)
 
                 if self.confirm == "yes":
-                    # -----------------------------
+        
+                    # ----------------------------- Saving Product info -------------
 
                     self.seller_product_file = Filing(dir_name="Products")
                     self.seller_product_file.general_filing(file_name=self.seller_info[2],
@@ -377,7 +460,7 @@ class ProductAdd:
                                                                     self.d])
 
 
-                    # ------------------------------
+                    # ------------------------------ Saving product Photo -------------------
 
                     if self.product_pic_path != "":
 
@@ -404,16 +487,13 @@ class ProductAdd:
         except:
             showerror("oops!", "oops! Something went wrong!")
 
-    # ==============================================   =========================================
-
-
-# *************************************************    ****************************************
+# ************************************************* Class for Saving Seller Info ****************************************
 
 class SellerInfo:
     
     def __init__(self, root=None, title="User", max_width=1100, max_height=600, seller_info=[], pic=None):
         
-        # ================================= Setting Screen =============================================
+        # ================================= Settingup the Screen =============================================
         
         self.root = root
         self.root.title(f"{title} - Edit Info")
@@ -505,14 +585,16 @@ class SellerInfo:
         self.save_seller_info_button = Button(self.root, text="Save changes", font=("Times", "20"), fg="white",  padx=20, width=10, bg="#FF4081", pady=5, command=self.save_seller_info).pack(pady=10)
 
     
-    # =======================================    ==================================================
+    # =============================== Function for savinf Seler Info   =====================================
         
     def save_seller_info(self):
         # try:
         self.ask = askquestion("Confirm Changes", "Are you sure to save this changes?", parent=self.root)
 
         if self.ask == "yes":
-            # ========================================   =========================================
+            
+            # ======================================== Assigning Variables  =========================================
+            
             self.nam = self.seller_name.get()
             self.user = self.seller_username.get()
             self.mail = self.seller_email.get()
@@ -524,11 +606,11 @@ class SellerInfo:
             self.gender = self.seller_gender.get()
             self.address = self.seller_address_info.get(1.0, END)[:-1]
 
-            # ============================================   ======================================
+            # ============================ Saving Seller Info   ====================================
 
             if os.path.exists("Accounts Info/Seller Accounts.csv"):
 
-                # -------------------------------   --------------------------
+                # ------------------------------- Checking for available data  --------------------------
 
                 #
                 self.all_seller_data = Filing.file_read(dir_name="Accounts Info", file_name="Seller Accounts")
@@ -567,12 +649,13 @@ class SellerInfo:
                         for i in range(1, len(self.seller_data_all)+1):
                             write.writerow([str(i), " "]+self.seller_data_all[i-1])
 
-                # ------------------------------------   ---------------------------
+                # ------------------------------------ Filing for saving data  ---------------------------
+                
                 else:
                     self.seller_info_file = Filing("Accounts Info")
                     self.seller_info_file.general_filing(file_name="Seller Accounts", data_list=[self.nam, self.gender, self.age, self.dob, self.shop_name, self.cont, self.user, self.mail, self.passw, self.address], col_list=["Name", "Gender", "Age", "Date of Birth", "Shop Name", "Contact No.", "Username", "Email", "Password", "Address"])
 
-            # -------------------------------------   -----------------------------------
+            # ------------------------------------- Filing for saving data  -----------------------------------
             else:
                 self.seller_info_file = Filing("Accounts Info")
                 self.seller_info_file.general_filing(file_name="Seller Accounts", data_list=[self.nam, self.gender, self.age, self.dob, self.shop_name, self.cont, self.user, self.mail, self.passw, self.address], col_list=["Name", "Gender", "Age", "Date of Birth", "Shop Name", "Contact No.", "Username", "Email", "Password", "Address"])
@@ -581,8 +664,124 @@ class SellerInfo:
 
         # except:
         # showerror("oops!", "oops! Something went wrong!", parent=self.root)
+        
+# ************************************ Class to See Seller Sales  ***********************************
 
-# ***************************************************   **********************************************
+class SellerSales():
+    
+    def __init__(self,root, title="Sales View", heading="View Sales", filelist=[], max_width=600,
+                 max_height=500, treeviewcolumns=(), seller_username=""):
+       
+        # ================================= Setting Screen =============================================
+        
+        self.root = root
+        self.root.title(f"{title} - Edit Info")
+        self.root.grab_set()
+        self.root.protocol("WM_DELETE_WINDOW", lambda: SellerGui.callback(self.root))
+        
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
+        self.center_width = int((self.screen_width/2) - (max_width/2))
+        self.center_height = int((self.screen_height/2) - (max_height/2))
+        
+        self.root.geometry(f"{max_width}x{max_height}+{self.center_width}+{self.center_height}")
+        self.root.maxsize(max_width, max_height)
+        self.root.minsize(max_width, max_height)
+        
+        self.root.configure(bg="#FFFFFF")
+        
+        # ============================= Assigning Variables  =========================================
+        
+        self.username = seller_username
+        self.file_list = filelist
+        
+        # ======================  Heading Label ========================
+        
+        self.heading = Label(self.root, text=heading, font=("Times New Roman", 20, "bold"), bg="light grey")
+        self.heading.pack(fill=X)
+
+        # ==================== listbox on the left ================
+
+        # frame and scrollbar
+        self.left_frame = LabelFrame(self.root, text="Show Files", padx=20, pady=20,
+                                     font=("Times", "22", "bold"),  bg="#FFFFFF")
+        self.list_box_frame = Frame(self.left_frame, bg="#FFFFFF")
+        self.list_box_frame.pack()
+        self.scrollbar = Scrollbar(self.list_box_frame, orient=VERTICAL)
+
+        # the list box
+        self.listbox = Listbox(self.list_box_frame, width=25, height=12,
+                               font=("Times", 16), yscrollcommand=self.scrollbar.set)
+
+        # configure scrollbar
+        self.scrollbar.config(command=self.listbox.yview)
+        self.scrollbar.pack(side=RIGHT, fill=Y)
+        self.listbox.pack()
+
+        # inserting the data list in the listbox
+        for file in self.file_list:
+            self.listbox.insert(END, file)
+
+        self.show_button = Button(self.left_frame, text="Show Record", bg="#303F9F", fg="white",
+                                  font=("Times", 20), command=self.show)
+        self.show_button.pack(pady=30)
+
+        self.left_frame.pack(side=LEFT, padx=30)
+
+
+        # ==================== Treeview in right frame =====================
+
+        self.treeview_frame = Frame(self.root, padx=10)
+        self.style = ttk.Style()
+        self.style.configure("Treeview", background="#D3D3D3", foreground="black",
+                             fieldbackground="white", rowheight=25)
+        self.style.theme_use("default")
+        self.style.configure("Treeview.Heading", font=("Times", 14))
+        self.style.configure(".", font="Times 12")
+        
+        # --------------------------------- Adding Scrollbar  ----------------------------
+
+        self.yscrollbar = Scrollbar(self.treeview_frame)
+        self.yscrollbar.pack(side=RIGHT, fill=Y)
+
+        # -----------------------------------    ------------------------------------------
+
+        #treeview columns
+        col = treeviewcolumns
+        # Adding Treeview
+        self.treeview = ttk.Treeview(self.treeview_frame, height=29, show="headings", columns=col,
+                                     yscrollcommand=self.yscrollbar.set)
+
+        # Range for columns
+        for i in range(len(col)):
+            self.treeview.column(col[i], width=len(col[i]) + 2, anchor=W)
+
+        # Range for headings
+        for i in range(len(col)):
+            self.treeview.heading(col[i], text=col[i], anchor=CENTER)
+
+        self.treeview.pack(fill=BOTH)
+        self.yscrollbar.config(command=self.treeview.yview)
+        self.treeview_frame.pack(fill=BOTH, pady=5)
+
+    # ============================ Funtion for inserting data =====================
+
+    def show(self):
+        
+        if self.listbox.get(ANCHOR) == "":
+            showerror("Empty Selection", "Please select the file from the list.")
+        
+        else:
+            # Reteriving Info from file    
+            self.purchase_data = Filing.file_read(dir_name=f"Shopping History/{self.username}", file_name=self.listbox.get())
+            self.purchase_data = self.purchase_data[1:]
+            self.purchase_data = list(map(lambda x: x[1:], self.purchase_data))
+            self.count=1
+            for i in self.purchase_data:
+                self.treeview.insert(parent="",index="end",iid=self.count,text="",values=(self.count, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]))
+                self.count+=1
+
+# ***************************************************  Main Code **********************************************
 
 if __name__ == '__main__':
 

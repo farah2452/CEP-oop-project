@@ -1,30 +1,38 @@
 
+# *********************************** Importing Modules ************************
 
 from csv import *
 import os
 from tkinter.messagebox import showerror, showinfo
 import pickle
 
+# ************************************* Class for Filing ========================
 
 class Filing:
     
+    # ===================================  Directory Name ====================
     def __init__(self, dir_name="Accounts"):
         
         self.dir_name = dir_name
-        
+    
+    # ======================= Function for the General File Saving ======================
+    
     def general_filing(self, file_name="customer", data_list=[], col_list = []):
         
+        # File Name
         self.file_name = file_name
         
+        # Checking for the directory
         if os.path.isdir(self.dir_name):
             
+            #Checking for the file
             if os.path.exists(self.dir_name+"/"+self.file_name+".csv"):
                 
                 try:
                     
-                    with open(self.dir_name+"/"+self.file_name+".csv","r") as f:
+                    with open(self.dir_name+"/"+self.file_name+".csv", "r") as f:
                         pass
-                    
+                    # SAving File
                     self.data_file_list = Filing.file_read(dir_name=self.dir_name, file_name=self.file_name)
                     self.s_no = len(self.data_file_list)
                     self.accounts_file_structure(self.s_no, col_list=col_list, data_list=data_list)
@@ -34,41 +42,42 @@ class Filing:
                     showerror("Open File", "Please close the file first")
 
             else:
-                
+                # Saving File
                 self.accounts_file_structure(s_no=1, col_list=col_list, data_list=data_list)
             
         else:
-            
+            # Creating Directory and saving File
             os.mkdir(self.dir_name)
             self.accounts_file_structure(s_no=1, col_list=col_list, data_list=data_list)
         
+    # ===========================  Fucntion for the General file Structure =========================    
     
     def accounts_file_structure(self, s_no=1, col_list=[], data_list=[]):
         
         try:
-            
-                                    
+            # Assigning the User Data
             self.data_list = data_list
             self.col_list = col_list
             
-            self.col_list.insert(0,"S.No")
-            for i in range(1,len(self.col_list)+len(self.col_list)-2,2):
-                self.col_list.insert(i," ")
+            # =================== Creating Foramat for the file ====================
             
-            self.data_list.insert(0,s_no)
-            for i in range(1,len(self.data_list)+len(self.data_list)-2,2):
-                self.data_list.insert(i," ")
+            self.col_list.insert(0, "S.No")
+            for i in range(1, len(self.col_list)+len(self.col_list)-2, 2):
+                self.col_list.insert(i, " ")
+            
+            self.data_list.insert(0, s_no)
+            for i in range(1, len(self.data_list)+len(self.data_list)-2, 2):
+                self.data_list.insert(i, " ")
                 
-            
+            # ==================== Appending Data in the File ======================
 
             if os.path.exists(self.dir_name+"/"+self.file_name+".csv"):
-                with open(self.dir_name+"/"+self.file_name+".csv","a+",newline="") as f:
-                    write =writer(f)
+                with open(self.dir_name+"/"+self.file_name+".csv", "a+", newline="") as f:
+                    write = writer(f)
                     write.writerow(self.data_list)
 
             else:
-                
-                with open(self.dir_name+"/"+self.file_name+".csv","a+", newline="") as f:
+                with open(self.dir_name+"/"+self.file_name+".csv", "a+", newline="") as f:
                     write = writer(f)
                     write.writerow(self.col_list)
                     write.writerow([])
@@ -80,7 +89,7 @@ class Filing:
             showinfo("Missing Field","All fields are required")
             
     
-                    
+    # ========================== Function for Getting the File Data =======================                
     
     @staticmethod
     def file_read(dir_name=None, file_name=None):
@@ -93,7 +102,8 @@ class Filing:
                 if dat != [] and not all(x=="" for x in dat):
                     data.append(list(filter(lambda x: x!=" ",dat)))
         return data
-        
+    
+    # ========================== Function for Saving the Pic Data =======================    
 
     @staticmethod
     def pic_file_save(dir_name=None, file_name=None, obj=None):
@@ -101,6 +111,7 @@ class Filing:
         with open(f"{dir_name}/{file_name}.pkl", "wb") as f:
             pickle.dump(obj, f)
     
+    # ========================== Function for Getting the Pic Data =======================
     
     @staticmethod
     def pic_file_read(dir_name=None, file_name=None):

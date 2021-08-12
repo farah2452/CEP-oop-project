@@ -1,5 +1,5 @@
 
-# ****************************************  **************************************
+# **************************************** Importing Modules **************************************
 
 from tkinter import *
 from PIL import Image, ImageTk
@@ -8,15 +8,15 @@ from Exceptions import *
 from seller_window_class import *
 import PIL.Image
 
-# ***************************************    **************************************
+# *************************************** Class for Sign up Form   **************************************
 
 class Signup_Form:
     
-    # =======================================      ==============================================
+    # ======================== Function for Creating Sigup Form ==============================================
     
-    def customer_signup(self, master=None, geometry="515x485", title="Customer Sign Up", icon = None, image=None, relief=SUNKEN, entry_bg = "#F5F5F5", label_font = "Times 16", bg = "#9C27B0", fname=None, lname=None, username=None, email=None, passw=None, place_x=0, place_y=0):  
+    def customer_signup(self, master=None, geometry="515x485", title="Customer Sign Up", icon = None, relief=SUNKEN, entry_bg = "#F5F5F5", label_font = "Times 16", bg = "#9C27B0", fname=None, lname=None, username=None, email=None, passw=None, place_x=0, place_y=0):  
         
-        # ==========================================    ==========================================
+        # ========================================== Setting up the Screen  ==========================================
         
         self.root = master
         self.root.geometry(geometry)
@@ -25,20 +25,21 @@ class Signup_Form:
                 self.root.iconbitmap(icon)
                 
         self.root.grab_set()
+        
+        # ================================= Main Frame  ===============================================
                 
-        # Form Frame with fields
         self.form_frame = Frame(self.root, relief=relief, bd=5)
         
-        if image != None:
-            self.image = ImageTk.PhotoImage(PIL.Image.open(image)).resize((360,600))
-            self.image_label = Label(self.form_frame, image = self.image).pack(pady = 10)
-
+            # ----------------- Form Frame with fields ------------------
+        
         self.signup_form = LabelFrame(self.form_frame, text="SIGN UP", font=("Times", "22", "bold"))
 
         self.subheader_lab = Label(self.signup_form,
                                    text="Please fill in this form to create an account!",
                                    font="Times 15").pack(side=TOP, anchor="w", pady=10, padx=5)
         
+            # -------------- Fields Frame ----------------
+            
         self.form_entries  = Frame(self.signup_form)
         
         # Label for the fields
@@ -62,14 +63,16 @@ class Signup_Form:
 
 
         # packing  widgets
-        self.form_entries.pack(pady=5,padx=40)
-        self.signup_form.pack(pady=10,padx=10)
+        self.form_entries.pack(pady=5, padx=40)
+        self.signup_form.pack(pady=10 ,padx=10)
         self.form_frame.place(x=place_x, y=place_y)
         
 
-    # ===================================     =======================================================
-
+    # ======================== Function for Creating the Sigup Form ==============================================
+    
     def seller_signup(self, master=None, geometry="515x485", title="Seller Sign Up", image=None, icon=None, relief=SUNKEN, entry_bg = "#F5F5F5", label_font = "Times 16", bg = "#9C27B0", name=None, mall_name=None, username=None, email=None, passw=None, place_x=0, place_y=0):  
+        
+        # ========================================== Setting up the Screen  ==========================================
         
         self.root = master
         self.root.geometry(geometry)
@@ -78,18 +81,20 @@ class Signup_Form:
                 self.root.iconbitmap(icon)
         self.root.grab_set()
 
+        # ================================= Main Frame  ===============================================
+        
         # Form Frame with fields
         self.form_frame = Frame(master, relief=relief, bd=5)
         
-        if image != None:
-            self.image = ImageTk.PhotoImage(PIL.Image.open(image)).resize((360,600))
-            self.image_label = Label(self.form_frame, image = self.image).pack(pady = 10)
-
+            # ----------------- Form Frame with fields ------------------
+        
         self.signup_form = LabelFrame(self.form_frame, text="SIGN UP", font=("Times", "22", "bold"), labelanchor = "n")
 
         self.subheader_lab = Label(self.signup_form,
                                    text="Please fill in this form to create an account!",
                                    font="Times 15").pack(side=TOP, anchor="w", pady=10, padx=5)
+        
+            # -------------- Fields Frame ----------------
         
         self.form_entries  = Frame(self.signup_form)
         
@@ -117,16 +122,19 @@ class Signup_Form:
 
 
 
-# *******************************************    **********************************************
+# ************************************ Class for Signup ***************************************
 
 class Signup:
     
     def __init__(self, option=None, scr=None):
         
-        self.login_system=option
+        # ============================ Assigning the variables =========================
+
+        # Assigning Arguments
+        self.login_system = option
         self.screen = scr
         
-        # Entry variables
+        # Entry Variables
         self.fname = StringVar()
         self.lname = StringVar()
         self.username = StringVar()
@@ -135,18 +143,24 @@ class Signup:
         self.shop_name = StringVar()
         self.seller_name = StringVar()
         
+        # ================================= Creating the Screen ==========================
+         
         self.sign_up_window = Toplevel(self.screen)
-        
+        # Composition with Signup form class
         self.signup_window = Signup_Form()
-        
+        # Giving protocol to the window
         self.sign_up_window.protocol("WM_DELETE_WINDOW", lambda: SellerGui.callback(self.sign_up_window))
            
+            # ----------------------- Creating the Seller Form -------------
+        
         if self.login_system == "Seller":
             
             self.signup_window.seller_signup(self.sign_up_window, name=self.seller_name, mall_name=self.shop_name, username=self.username, email=self.mail, passw=self.password)
             # Sign Up Button
             self.register_button = Button(self.signup_window.form_frame, text="Sign Up", font="Times 16",
                                       relief=SUNKEN, bd=3, padx=20, fg="white", bg="#1976D2", command=self.register_user).pack(pady=10)
+        
+            # ----------------------- Creating the Customer Form -------------
         
         else:
             self.signup_window.customer_signup(self.sign_up_window, fname=self.fname, lname=self.lname, username=self.username, email=self.mail, passw=self.password)
@@ -156,13 +170,15 @@ class Signup:
         
         self.sign_up_window.mainloop()
     
-    
+    # ======================= Function for User Registration =======================
     
     def register_user(self):
         
+        # ======================== Seller Registration =======================
+        
         if self.login_system == "Seller":
             
-            # 
+            # Assigning Variables 
             self.name = self.seller_name.get()
             self.mall = self.shop_name.get()
             self.user = self.username.get()
@@ -170,24 +186,24 @@ class Signup:
             self.seller_pass = self.password.get()            
             
             try:
-            
+                # Raising Error for invalid fields
                 if self.name=="" or self.mall == "" or self.user=="" or self.seller_mail=="" or self.seller_pass=="":
                     raise A("hmmm")
                 
                 else:
                     if os.path.exists("Accounts/Seller Accounts.csv"):
-                       
+                        # Checking the account
                         self.sellers_data = Filing.file_read(dir_name="Accounts", file_name="Seller Accounts")
                         self.sellers_data = self.sellers_data[1:]
                         
                         if all(x[2]!=self.mall for x in self.sellers_data):
                             
                             if all(x[3]!=self.user and x[4]!=self.seller_mail and x[5]!=self.seller_pass for x in self.sellers_data):
-                                #
+                                # Storing details
                                 self.seller_account_file = Filing("Accounts")
                                 self.seller_account_file.general_filing(file_name="Seller Accounts", data_list=[self.name, self.mall, self.user, self.seller_mail, self.seller_pass], col_list=["Name", "Shop Name", "Username", "Email", "Password"])
 
-                                #
+                                # Destroying Screen
                                 self.signup_window.root.grab_release()
                                 self.sign_up_window.destroy()
 
@@ -198,14 +214,15 @@ class Signup:
                     
                     else:
                         
-                        #
+                        # Storing Details
                         self.seller_account_file = Filing("Accounts")
                         self.seller_account_file.general_filing(file_name="Seller Accounts", data_list=[self.name, self.mall, self.user, self.seller_mail, self.seller_pass], col_list=["Name", "Shop Name", "Username", "Email", "Password"])
 
-                        #
-                        self.sign_up_window.root.grab_release()
+                        # Destroying Screen
+                        self.signup_window.root.grab_release()
                         self.sign_up_window.destroy()
 
+            # ----------------------- Exceptions -----------------------------------
             
             except A:
                 showinfo("","errrrrrr", parent=self.sign_up_window)
@@ -213,9 +230,11 @@ class Signup:
             except B:
                 showinfo("","rrrrrr", parent=self.sign_up_window)
                        
+        # ======================== Seller Registration =======================
+                       
         else:
             
-            # 
+            # Assigning the variables
             self.f_name = self.fname.get()
             self.l_name = self.lname.get()
             self.user = self.username.get()
@@ -223,23 +242,23 @@ class Signup:
             self.customer_pass = self.password.get()            
             
             try:
+                #raising Error for invalid fields
                 if self.f_name=="" or self.l_name == "" or self.user=="" or self.customer_mail=="" or self.customer_pass=="":
-                  
                     raise A("hmmm")
                 
                 else:
                     if os.path.exists("Accounts/Customer Accounts.csv"):
-                        
+                        # Checking the data
                         self.customer_data = Filing.file_read(dir_name="Accounts", file_name="Customer Accounts")
                         self.customer_data = self.customer_data[1:]
                         
                         if all(x[3]!=self.user and x[4]!=self.customer_mail and x[5]!=self.customer_pass for x in self.customer_data):
                             
-                            #
+                            # Storing Details
                             self.seller_account_file = Filing("Accounts")
                             self.seller_account_file.general_filing(file_name="Customer Accounts",data_list=[self.f_name, self.l_name, self.user, self.customer_mail,self.customer_pass], col_list=["First Name", "Last Name", "Username", "Email", "Password"])
 
-                            #
+                            # Destroying Screen
                             self.signup_window.root.grab_release()
                             self.sign_up_window.destroy()
             
@@ -249,14 +268,15 @@ class Signup:
             
                     else:
                         
-                        #
+                        # Storing Details
                         self.seller_account_file = Filing("Accounts")
                         self.seller_account_file.general_filing(file_name="Customer Accounts",data_list=[self.f_name, self.l_name, self.user, self.customer_mail,self.customer_pass], col_list=["First Name", "Last Name", "Username", "Email", "Password"])
 
-                        #
+                        # Destroying Screen
                         self.signup_window.root.grab_release()
                         self.sign_up_window.destroy()
         
+            # ----------------------- Exceptions -----------------------------------
             
             except A as e:
                 showinfo("",e, parent=self.sign_up_window)
